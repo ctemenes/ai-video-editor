@@ -264,6 +264,8 @@ def apply_restart_cuts(speech_segments: list[tuple[float, float]],
 def get_speech_timestamps_silero(audio_path: str, min_speech_duration: float = 0.25, min_silence_duration: float = 0.5):
     """Use Silero VAD to detect speech segments."""
     import torch
+    import soundfile as sf
+    from scipy import signal
 
     model, utils = torch.hub.load(
         repo_or_dir='snakers4/silero-vad',
@@ -275,7 +277,21 @@ def get_speech_timestamps_silero(audio_path: str, min_speech_duration: float = 0
     (get_speech_timestamps, save_audio, read_audio, VADIterator, collect_chunks) = utils
 
     SAMPLE_RATE = 16000
-    wav = read_audio(audio_path, sampling_rate=SAMPLE_RATE)
+
+    # Load audio using soundfile instead of torchaudio (avoids torchcodec dependency)
+    audio_data, sample_rate = sf.read(audio_path)
+
+    # Convert to mono if stereo
+    if len(audio_data.shape) > 1:
+        audio_data = audio_data.mean(axis=1)
+
+    # Resample to 16kHz if needed
+    if sample_rate != SAMPLE_RATE:
+        num_samples = int(len(audio_data) * SAMPLE_RATE / sample_rate)
+        audio_data = signal.resample(audio_data, num_samples)
+
+    # Convert to torch tensor
+    wav = torch.from_numpy(audio_data).float()
 
     speech_timestamps = get_speech_timestamps(
         wav,
