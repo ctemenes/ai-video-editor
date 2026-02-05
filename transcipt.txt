@@ -1,0 +1,303 @@
+
+Introduction
+Hey everyone, I'm going to show you
+three agentic workflows for video. The
+first is an endto-end AI video editor
+that actually cuts up my content, mixes
+and masters it, and then uploads it to
+YouTube for me. That is what you guys
+are currently looking at right now, the
+byproduct of that flow. The second is an
+AI thumbnail generator. You guys are
+looking at the thumbnails right now
+before you clicked on this video. And
+the third is an AI outlier detector,
+which is how I came up with the idea for
+this video. So, I'm going to show you
+guys how to build these sorts of agentic
+workflows. I'm going to show you how all
+the stuff works, and then I'm even going
+to share them down below in the
+Video Editor
+description for free. So you guys are
+looking at the byproduct of this video
+editor right now, but in a nutshell,
+this automatically edits my talking head
+videos by removing silences and then
+actually enhancing the quality. The way
+it works is we start by extracting audio
+from a recorded video like what I'm
+doing right now in um Open Broadcast
+Studio, just some software platform. You
+guys can use whatever you want. It then
+runs this neural voice activity
+detection module called Solero VAD. It
+then removes all the silence gaps
+between speech. Um, I set it to 0.5
+second threshold, but I don't know,
+sometimes in videos you need to take a
+pause or you need to step out or you
+need to change tabs or whatever. This
+deals with that automatically. If I say
+these words, I'm not going to say them
+because it'll actually go through and
+edit my video. But if I say these two
+words, it'll actually go and then remove
+the part of the video that I made a
+mistake on and then go back to the
+previous section. And then I do some
+audio enhancements before applying some
+color grading. Then finally adding that
+swivel teaser that you guys saw at the
+beginning of this video. And then we use
+what's called hardware acceleration just
+to process it all much faster than
+Premiere Pro. So I developed this
+because I do a lot of videos now. It's a
+big chunk of my workflow. And to me,
+it's always been really important to
+economize the video production process
+however possible. I should note that I
+know none of the programming involved in
+this. This is entirely built through
+cloud code. And I've tested this now on
+several videos, some of which most of
+you guys here have probably seen.
+Anyway, most of my subscribers that is.
+Um, and yeah, the results are pretty
+incredible. So I just wanted to start
+with this because I think this is a
+pretty common use case. A lot of people
+here want to do videos. Probably a lot
+of people here sell to people that
+produce videos and stuff like that. This
+is definitely something that's really
+straightforward and simple. The way that
+I always recommend setting up your
+agentic workflows is using the
+directives orchestration execution
+layer. This is a three-step framework
+that I've talked about in previous
+videos, but essentially you store highle
+instructions about the task in this
+directives folder. Then you store uh
+Python scripts and stuff like that in
+the execution folder. I know nothing
+about the Python behind this. This is
+just where Claude code does its thing.
+And when you do it this way, what you do
+is separate concerns. Instead of forcing
+the language model to do a lot of the
+heavy lifting on its own, language
+models are pretty probabilistic, which
+means while they can succeed from time
+to time, they also make mistakes. You
+just allow it to call tools that it's
+already invested all its time and energy
+into to minimize any sort of um accuracy
+issues. So, here's an example of my
+smart video edit directive. I'm actually
+going to give this to you guys down
+below. Essentially, it starts by giving
+a brief description of what it is. So,
+we automatically edit talking head
+videos. I then provide a background
+image when the user says edit X video.
+Here are the steps to run. Always use
+the parallel version wherever possible.
+We have some parallelization in place.
+Here's what this produces and all this
+fun stuff. I mean like I didn't actually
+come up with this. I just ran this so
+many times and then at the end I said,
+"Hey, turn what we just did into a
+directive. Super straightforward." And
+then down below we also have a bunch of
+executions related to this. So, if I
+just scroll down and then get to smart
+video edit, sorry, simple video edit.
+Uh, and my AI should have just cut that
+out. We see here that we have some
+comments and then down here the actual
+script. So, we load in some anthropic
+API cues, some of configuration. Then we
+have a bunch of different thresholds and
+stuff like that. It's pretty badass the
+way that this thing works. I use this in
+parallel with a bunch of other scripts
+that you guys could see here. Although
+obviously I don't actually control or
+manage any of this stuff on my own.
+Basically, what occurs is I say, "Hey,
+can you edit my video?" It then looks
+through my directives folder, finds this
+directive, and then it just scrolls down
+here, and then looks to see, okay, what
+scripts are we calling? Eventually, it
+finds a bunch of scripts, and then it
+goes and it calls them all in order. So,
+I mean, you know, I'm not a programmer
+by trade. I've done some front end way
+back in the day, but I'm certainly
+nowhere near as skilled now as I was
+back then, and to be honest, back then I
+wasn't very good. Anyway, what's really
+cool is this is something that you could
+pay a software company a fair amount of
+money. um on either like a monthly
+subscription or maybe like pay some
+developers to put together for you that
+previously probably would have cost me
+many many thousands of dollars,
+potentially tens of thousands of dollars
+or more. And now I'm capable of doing
+this in much less than an afternoon,
+probably about half an hour back and
+forth. And I'm going to run you guys
+through how to do that sort of thing in
+a second. So how would I actually build
+this? It's as simple as me literally
+saying, "Hello, I'd like to build a
+simple workflow that takes as input a
+video, identifies the silence gaps, cuts
+those silence gaps, finds any mistakes I
+make, cuts those two, then builds a
+little cool intro animation, which in my
+case is a video swivel." Now, I've
+already built this and it's inside of my
+directives and executions folder, so
+obligatory here. I'm just letting it
+know, hey, there's already a workflow
+for this, but this is a demo showing
+building capabilities. So, I don't want
+you to acknowledge or even look at
+these. Build it from scratch. Start by
+giving me three options. we could use
+look at pre-existing solutions and the
+like and lay them out. If it makes
+sense, we can proceed. So, I'm just
+going to head over here and move to plan
+mode. I'm going to press enter and then
+I'm just going to allow it to come up
+with a plan. Now, I usually recommend
+anytime you're building any sort of
+workflow or anything like that. The best
+way forward is not just to come up with
+one um solution or possibility, but come
+up with multiple and then you
+essentially the sort of person in the
+driver's seat just gets to pick the best
+one. The reason why is because AI can
+have a habit of just going down little
+rabbit holes that don't actually go
+anywhere. It's just important for you as
+somebody that is sort of guiding the AI
+to at least be in the driver's seat a
+little bit. So, it's gone through and
+performed some web search for
+pre-existing solutions. I usually
+recommend doing this as well because
+odds are somebody will have a blog post
+talking about how they've done this. And
+then instead of you rebuilding the wheel
+from scratch, you can just use theirs.
+And as you see here, it's delivered me
+three options. We could use a pure local
+stack with this software platform and
+that software platform and that software
+platform. Now, in my case, I've actually
+done this exact same thing before. So, I
+know what these software platforms are.
+But let me tell you, most of the time
+when I ask you to build things like
+this, no idea what the software
+platforms are. I just have it run me
+through it at a very high level. So,
+then it gives me some, you know, uh um
+very detailed instructions. I run
+ffmpeg- af silence detect. Do I actually
+look at or use any of these? No, I
+don't. And then I have a hybrid cloud
+one here. And then down over here, I
+have a VAD first approach. Now, this is
+actually what I ended up going with,
+although I didn't use movie pie. I used
+some other library, but essentially, um,
+I tried all of these and I actually took
+each three of these and then I fed them
+over to other instances of cloud and I
+said, "Hey, how's it going? I'd like you
+to build a video editing workflow that
+does this." And you know what I did? I
+just tested all three simultaneously.
+And I figured out that this one over
+here worked the best. Took me, you know,
+somewhere like 30 minutes to maybe an
+hour or so in total to do this. I did
+need to record a video to actually test
+this on. And there was of course some
+back and forth, but this is
+extraordinarily straightforward to
+build. And as long as you use a
+framework to help constrain that, I got
+to be honest, the only thing really
+limiting your ability to build at this
+point is just your agency. Can you
+identify a problem in your day-to-day
+workflow and then make a decision to
+solve it? So after we've built said
+workflow, we obviously need some raw
+material to test it on. And so that's
+the next step. I recorded an 8 minute
+and 51 second clip here called
+1_cut_851.
+So here I just go run the video editing
+workflow on one_cut_851
+MP4. I'm going to set it to bypass
+permissions that I can go through
+things. And because I've already stored
+some highle instructions on telling it
+what to do and essentially how my um um
+directive orchestration execution
+framework works inside of this
+agents.mmd file or claude MD or Gemini
+MD all just depends on what you're
+using. Essentially, this knows that when
+I say, "Hey, I want you to run the video
+editing workflow," it needs to check
+directives first and then find the
+executions listed. And once it's
+assembled all that information, it
+actually just goes and runs. So, as you
+guys can see here, it's actually done
+this now. So, it's saying, "Hey, found
+the video." And then there's a
+background image running the video
+editing workflow. The next workflow is
+essentially a cross niche outlier
+finder. Now, um, just as somebody on
+YouTube, maybe you guys aren't in the
+know, but a big way that people on
+YouTube choose the titles and the
+thumbnails to make videos on is they
+just look to see what are other titles
+and thumbnails that other people have
+used in the past that have worked really
+well. The way we do so is we calculate
+what's called an outlier score. So, this
+one over here, um, Elon Musk, a
+different conversation or whatever. This
+one scores 6.81 81 on the outlier score,
+which tells us that, you know, there's
+something inherently interesting about
+this video because it performed at
+almost seven times the average when
+compared to other videos on on that same
+channel. Now, in this case, it's
+probably just because uh he doesn't do a
+ton of interviews and so that's that's
+interesting. So, scrolling down,
+launching a $und00 million startup from
+our living room with a little time and
+then said living room. That's pretty
+cool. Jack Maw, you know, a big

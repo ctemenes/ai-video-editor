@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Video Editing & Content Workflow</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f5f5;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background: white;
+            min-height: 100vh;
+        }
+
+        header {
+            border-bottom: 3px solid #2563eb;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            color: #1e293b;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #64748b;
+            font-size: 1.2em;
+        }
+
+        h2 {
+            color: #1e293b;
+            margin-top: 40px;
+            margin-bottom: 15px;
+            font-size: 1.8em;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 10px;
+        }
+
+        h3 {
+            color: #334155;
+            margin-top: 25px;
+            margin-bottom: 12px;
+            font-size: 1.3em;
+        }
+
+        p {
+            margin-bottom: 15px;
+            color: #475569;
+        }
+
+        .workflow-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .workflow-card {
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 25px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .workflow-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .workflow-icon {
+            font-size: 2.5em;
+            margin-bottom: 15px;
+        }
+
+        .workflow-title {
+            font-size: 1.4em;
+            color: #1e293b;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .workflow-desc {
+            color: #64748b;
+            margin-bottom: 15px;
+        }
+
+        pre {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: 6px;
+            overflow-x: auto;
+            margin: 15px 0;
+            font-size: 0.9em;
+        }
+
+        code {
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        .inline-code {
+            background: #e2e8f0;
+            color: #1e293b;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 0.9em;
+        }
+
+        ul, ol {
+            margin-left: 25px;
+            margin-bottom: 15px;
+        }
+
+        li {
+            margin-bottom: 8px;
+            color: #475569;
+        }
+
+        .feature-list {
+            list-style: none;
+            margin-left: 0;
+        }
+
+        .feature-list li:before {
+            content: "✓ ";
+            color: #10b981;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+
+        .architecture-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 8px;
+            margin: 30px 0;
+        }
+
+        .architecture-box h3 {
+            color: white;
+            border-bottom: 2px solid rgba(255,255,255,0.3);
+            padding-bottom: 10px;
+        }
+
+        .layer {
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            border-radius: 6px;
+            margin: 15px 0;
+            border-left: 4px solid #fbbf24;
+        }
+
+        .layer-title {
+            font-weight: 600;
+            font-size: 1.1em;
+            margin-bottom: 8px;
+        }
+
+        .warning-box {
+            background: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+
+        .info-box {
+            background: #dbeafe;
+            border-left: 4px solid #2563eb;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+
+        .success-box {
+            background: #d1fae5;
+            border-left: 4px solid #10b981;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        th {
+            background: #f8fafc;
+            color: #1e293b;
+            font-weight: 600;
+        }
+
+        tr:hover {
+            background: #f8fafc;
+        }
+
+        .button {
+            display: inline-block;
+            background: #2563eb;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 6px;
+            text-decoration: none;
+            margin: 5px;
+            transition: background 0.2s;
+        }
+
+        .button:hover {
+            background: #1d4ed8;
+        }
+
+        footer {
+            margin-top: 60px;
+            padding-top: 30px;
+            border-top: 2px solid #e2e8f0;
+            text-align: center;
+            color: #64748b;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎬 AI Video Editing & Content Workflow</h1>
+            <p class="subtitle">Automated video editing, thumbnail generation, and content research powered by AI</p>
+        </header>
+
+        <section>
+            <p>An agentic workflow system that automates the entire video production pipeline—from editing raw footage to generating thumbnails and researching trending content. Built using Claude Code and a structured 3-layer architecture that separates concerns for maximum reliability.</p>
+        </section>
+
+        <h2>Three Core Workflows</h2>
+        <div class="workflow-grid">
+            <div class="workflow-card">
+                <div class="workflow-icon">🎥</div>
+                <div class="workflow-title">Smart Video Editor</div>
+                <div class="workflow-desc">Automatically removes silences, enhances audio, applies color grading, and adds 3D transitions to talking-head videos.</div>
+                <ul class="feature-list">
+                    <li>Neural voice activity detection</li>
+                    <li>Audio enhancement (EQ, compression)</li>
+                    <li>Hardware-accelerated encoding</li>
+                    <li>Optional LUT color grading</li>
+                </ul>
+            </div>
+
+            <div class="workflow-card">
+                <div class="workflow-icon">🖼️</div>
+                <div class="workflow-title">AI Thumbnail Generator</div>
+                <div class="workflow-desc">Face-swaps YouTube thumbnails with pose-aware matching, generating multiple variations with iterative editing support.</div>
+                <ul class="feature-list">
+                    <li>Face direction analysis (yaw/pitch)</li>
+                    <li>Pose-matching reference photos</li>
+                    <li>3 variations per generation</li>
+                    <li>Iterative edit refinement</li>
+                </ul>
+            </div>
+
+            <div class="workflow-card">
+                <div class="workflow-icon">📊</div>
+                <div class="workflow-title">Content Outlier Detector</div>
+                <div class="workflow-desc">Identifies high-performing videos from adjacent niches, generating adapted title variants and insights for your channel.</div>
+                <ul class="feature-list">
+                    <li>Outlier score calculation</li>
+                    <li>3 title variants per video</li>
+                    <li>Google Sheets output</li>
+                    <li>Full transcript analysis</li>
+                </ul>
+            </div>
+        </div>
+
+        <h2>The 3-Layer Architecture</h2>
+        <div class="architecture-box">
+            <p style="margin-bottom: 20px;">This system separates concerns to maximize reliability. LLMs are probabilistic, but business logic requires consistency. The solution: push complexity into deterministic code.</p>
+
+            <div class="layer">
+                <div class="layer-title">Layer 1: Directive (What to do)</div>
+                <p>SOPs written in Markdown stored in <span class="inline-code">directives/</span>. These define goals, inputs, tools, outputs, and edge cases—just like instructions you'd give a mid-level employee.</p>
+            </div>
+
+            <div class="layer">
+                <div class="layer-title">Layer 2: Orchestration (Decision making)</div>
+                <p>Claude Code handles intelligent routing. It reads directives, calls execution scripts in the right order, handles errors, and updates directives with learnings. It's the glue between intent and execution.</p>
+            </div>
+
+            <div class="layer">
+                <div class="layer-title">Layer 3: Execution (Doing the work)</div>
+                <p>Deterministic Python scripts in <span class="inline-code">execution/</span>. These handle API calls, video processing, data operations—reliable, testable, and fast.</p>
+            </div>
+
+            <p style="margin-top: 20px;"><strong>Why this works:</strong> If you do everything yourself, errors compound. 90% accuracy per step = 59% success over 5 steps. By pushing complexity into deterministic code, the AI focuses only on decision-making.</p>
+        </div>
+
+        <h2>Quick Start</h2>
+
+        <div class="info-box">
+            <strong>Prerequisites:</strong> Python 3.10+, FFmpeg, Node.js 18+ (optional)
+        </div>
+
+        <h3>1. Install Dependencies</h3>
+        <pre><code># Python packages (already installed)
+python -m pip install -r requirements.txt
+
+# Node.js packages for 3D transitions (optional)
+cd execution/video_effects
+npm install</code></pre>
+
+        <h3>2. Install FFmpeg</h3>
+        <div class="warning-box">
+            <strong>⚠ Required:</strong> FFmpeg must be installed for video processing.
+        </div>
+        <pre><code># Windows (Chocolatey)
+choco install ffmpeg
+
+# Or download from https://ffmpeg.org/download.html</code></pre>
+
+        <h3>3. Configure API Keys</h3>
+        <pre><code>copy .env.template .env
+# Edit .env and add your keys</code></pre>
+
+        <p><strong>Required API Keys:</strong></p>
+        <ul>
+            <li><strong>ANTHROPIC_API_KEY</strong> - Get from <a href="https://console.anthropic.com/" target="_blank">console.anthropic.com</a></li>
+            <li><strong>NANO_BANANA_API_KEY</strong> - Get from <a href="https://nanobanana.xyz/" target="_blank">nanobanana.xyz</a></li>
+        </ul>
+
+        <h3>4. Run Your First Workflow</h3>
+        <pre><code># Edit a video
+python execution/jump_cut_vad_parallel.py input.mp4 output.mp4 --enhance-audio
+
+# Generate thumbnails
+python execution/recreate_thumbnails.py --youtube "VIDEO_URL"
+
+# Find trending content
+python execution/scrape_cross_niche_tubelab.py</code></pre>
+
+        <div class="success-box">
+            <strong>✓ Setup Complete!</strong> You're ready to automate your video workflow.
+        </div>
+
+        <h2>Example Workflows</h2>
+
+        <h3>Complete Video Editing Pipeline</h3>
+        <pre><code># 1. Remove silences and enhance audio
+python execution/jump_cut_vad_parallel.py raw_video.mp4 .tmp/edited.mp4 --enhance-audio
+
+# 2. Add 3D swivel teaser preview
+python execution/insert_3d_transition.py .tmp/edited.mp4 final.mp4 --bg-image .tmp/bg.png
+
+# Result: Fully edited, professional-looking video</code></pre>
+
+        <h3>Thumbnail Creation from Trending Videos</h3>
+        <pre><code># 1. Find high-performing videos
+python execution/scrape_cross_niche_tubelab.py
+
+# 2. Pick a video from the Google Sheet output
+# 3. Generate thumbnail with face-swap
+python execution/recreate_thumbnails.py --youtube "WINNING_VIDEO_URL"
+
+# 4. Refine the best variation
+python execution/recreate_thumbnails.py --edit ".tmp/thumbnails/best.png" \
+  --prompt "Change text to 'My Title'. Update colors to blue."</code></pre>
+
+        <h2>Project Structure</h2>
+        <pre><code>Video editing/
+├── CLAUDE.md                 # Agent instructions
+├── README.md                 # Full documentation
+├── QUICKSTART.md             # Quick start guide
+├── SETUP.md                  # Detailed setup
+├── requirements.txt          # Python dependencies
+├── .env.template             # Environment template
+│
+├── directives/               # High-level SOPs (Layer 1)
+│   ├── smart_video_edit.md
+│   ├── recreate_thumbnails.md
+│   └── cross_niche_outliers.md
+│
+├── execution/                # Python scripts (Layer 3)
+│   ├── jump_cut_vad_parallel.py
+│   ├── recreate_thumbnails.py
+│   ├── scrape_cross_niche_tubelab.py
+│   └── video_effects/        # Remotion for 3D transitions
+│
+└── .tmp/                     # Temporary files
+    ├── thumbnails/
+    └── reference_photos/</code></pre>
+
+        <h2>Key Features</h2>
+
+        <h3>Video Editor</h3>
+        <ul>
+            <li><strong>Silero VAD</strong> - Neural voice activity detection for accurate silence removal</li>
+            <li><strong>Audio Enhancement</strong> - Professional EQ, compression, normalization to -16 LUFS</li>
+            <li><strong>Hardware Acceleration</strong> - 4-6x faster processing with VideoToolbox/NVENC</li>
+            <li><strong>Smart Rendering</strong> - Only re-encodes modified segments</li>
+            <li><strong>Color Grading</strong> - Apply LUT files for cinematic looks</li>
+            <li><strong>3D Transitions</strong> - Remotion-powered swivel teaser previews</li>
+        </ul>
+
+        <h3>Thumbnail Generator</h3>
+        <ul>
+            <li><strong>MediaPipe</strong> - Face pose estimation (yaw/pitch angles)</li>
+            <li><strong>Pose Matching</strong> - Automatically finds best-matching reference photo</li>
+            <li><strong>Gemini Pro</strong> - High-quality face-swapping</li>
+            <li><strong>Batch Generation</strong> - 3 variations to choose from</li>
+            <li><strong>Iterative Editing</strong> - Refine text, colors, backgrounds</li>
+        </ul>
+
+        <h3>Outlier Detector</h3>
+        <ul>
+            <li><strong>TubeLab API</strong> - Access 4M+ pre-indexed videos</li>
+            <li><strong>Outlier Scoring</strong> - Views vs. channel average + recency boost</li>
+            <li><strong>Cross-Niche Scoring</strong> - Transferability metrics</li>
+            <li><strong>Title Variants</strong> - AI-generated adaptations for your niche</li>
+            <li><strong>Full Transcripts</strong> - Study exact hooks and structures</li>
+            <li><strong>Google Sheets</strong> - Organized output with thumbnails</li>
+        </ul>
+
+        <h2>API Costs</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Operation</th>
+                    <th>Model</th>
+                    <th>Approximate Cost</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Video editing</td>
+                    <td>-</td>
+                    <td>Free (local processing)</td>
+                </tr>
+                <tr>
+                    <td>Thumbnail generation</td>
+                    <td>Gemini Pro</td>
+                    <td>$0.14-0.24 per image</td>
+                </tr>
+                <tr>
+                    <td>Outlier detection</td>
+                    <td>Claude Sonnet</td>
+                    <td>$0.15-0.25 per outlier</td>
+                </tr>
+                <tr>
+                    <td>Title generation</td>
+                    <td>Claude Sonnet</td>
+                    <td>$0.05-0.10 per title set</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2>Command Reference</h2>
+
+        <h3>Video Editing Commands</h3>
+        <pre><code># Basic silence removal with audio enhancement
+python execution/jump_cut_vad_parallel.py input.mp4 output.mp4 --enhance-audio
+
+# With color grading
+python execution/jump_cut_vad_parallel.py input.mp4 output.mp4 \
+  --enhance-audio --apply-lut .tmp/cinematic.cube
+
+# With restart detection ("cut cut" phrase removes mistakes)
+python execution/jump_cut_vad_parallel.py input.mp4 output.mp4 \
+  --enhance-audio --detect-restarts
+
+# Add 3D swivel teaser
+python execution/insert_3d_transition.py input.mp4 output.mp4 \
+  --insert-at 3 --duration 5 --bg-image .tmp/bg.png</code></pre>
+
+        <h3>Thumbnail Commands</h3>
+        <pre><code># Generate from YouTube video
+python execution/recreate_thumbnails.py --youtube "https://youtube.com/watch?v=VIDEO_ID"
+
+# Generate from local image
+python execution/recreate_thumbnails.py --source "path/to/thumbnail.jpg"
+
+# Generate 5 variations
+python execution/recreate_thumbnails.py --youtube "VIDEO_URL" -n 5
+
+# Edit a generated thumbnail
+python execution/recreate_thumbnails.py --edit "path/to/image.png" \
+  --prompt "Change 'OLD TEXT' to 'NEW TEXT'. Make background darker."</code></pre>
+
+        <h3>Content Research Commands</h3>
+        <pre><code># Default run (last 30 days, ~100 outliers)
+python execution/scrape_cross_niche_tubelab.py
+
+# Custom search terms
+python execution/scrape_cross_niche_tubelab.py --terms "business strategy" "productivity"
+
+# Multiple queries (uses more TubeLab credits)
+python execution/scrape_cross_niche_tubelab.py --queries 3
+
+# Skip transcripts for faster results
+python execution/scrape_cross_niche_tubelab.py --skip_transcripts
+
+# Larger result set
+python execution/scrape_cross_niche_tubelab.py --size 200 --max_days 60</code></pre>
+
+        <h2>Technical Details</h2>
+
+        <h3>System Requirements</h3>
+        <ul>
+            <li><strong>OS:</strong> Windows, macOS, or Linux</li>
+            <li><strong>Python:</strong> 3.10+ (tested on 3.14)</li>
+            <li><strong>FFmpeg:</strong> Latest version</li>
+            <li><strong>Node.js:</strong> 18+ (optional, for 3D transitions)</li>
+            <li><strong>RAM:</strong> 8GB minimum, 16GB recommended</li>
+            <li><strong>Storage:</strong> 10GB+ for temp video files</li>
+        </ul>
+
+        <h3>Python Dependencies</h3>
+        <ul>
+            <li>anthropic - Claude API client</li>
+            <li>opencv-python - Video processing</li>
+            <li>mediapipe - Face pose estimation</li>
+            <li>google-generativeai - Gemini API</li>
+            <li>gspread - Google Sheets integration</li>
+            <li>yt-dlp - YouTube video downloads</li>
+            <li>youtube-transcript-api - Transcript fetching</li>
+        </ul>
+
+        <h3>How It Works</h3>
+
+        <p><strong>Video Editing:</strong></p>
+        <ol>
+            <li>Extract audio from video using FFmpeg</li>
+            <li>Run Silero VAD to detect speech vs. silence</li>
+            <li>Generate cut list with configurable thresholds</li>
+            <li>Parallel encode segments using hardware acceleration</li>
+            <li>Apply audio filters (highpass, EQ, compression, normalization)</li>
+            <li>Concatenate segments and mux with enhanced audio</li>
+            <li>Optional: Apply LUT color grading and add 3D transitions</li>
+        </ol>
+
+        <p><strong>Thumbnail Generation:</strong></p>
+        <ol>
+            <li>Download source thumbnail from YouTube</li>
+            <li>Analyze face direction using MediaPipe Face Mesh</li>
+            <li>Calculate yaw/pitch angles</li>
+            <li>Find closest matching reference photo by Euclidean distance</li>
+            <li>Send to Gemini with face-swap prompt</li>
+            <li>Generate 3 variations</li>
+            <li>Support iterative edits for refinement</li>
+        </ol>
+
+        <p><strong>Outlier Detection:</strong></p>
+        <ol>
+            <li>Query TubeLab API for videos by keyword/channel</li>
+            <li>Calculate outlier score (views / channel avg)</li>
+            <li>Apply recency boost for fresh content</li>
+            <li>Calculate cross-niche transferability score</li>
+            <li>Fetch transcripts (YouTube API + Apify fallback)</li>
+            <li>Generate title variants using Claude</li>
+            <li>Output to Google Sheets with metadata</li>
+        </ol>
+
+        <h2>Troubleshooting</h2>
+
+        <div class="warning-box">
+            <p><strong>Common Issues:</strong></p>
+            <ul style="margin-top: 10px;">
+                <li><strong>FFmpeg not found:</strong> Restart terminal after installation, verify PATH</li>
+                <li><strong>Permission errors:</strong> Use <span class="inline-code">python -m pip</span> instead of <span class="inline-code">pip</span></li>
+                <li><strong>Missing API key:</strong> Check <span class="inline-code">.env</span> file exists and keys are correct</li>
+                <li><strong>Video encoding slow:</strong> Ensure hardware acceleration is enabled (VideoToolbox/NVENC)</li>
+                <li><strong>Face not detected:</strong> System falls back to default references automatically</li>
+            </ul>
+        </div>
+
+        <h2>Documentation</h2>
+
+        <ul>
+            <li><strong>QUICKSTART.md</strong> - 5-minute getting started guide</li>
+            <li><strong>SETUP.md</strong> - Detailed installation instructions</li>
+            <li><strong>CLAUDE.md</strong> - Agent architecture and operating principles</li>
+            <li><strong>README.md</strong> - Comprehensive project documentation</li>
+            <li><strong>directives/*.md</strong> - Individual workflow documentation</li>
+        </ul>
+
+        <footer>
+            <p>Built with Claude Code · Powered by Anthropic, FFmpeg, MediaPipe, and Remotion</p>
+            <p style="margin-top: 10px; font-size: 0.9em;">This project demonstrates the power of agentic workflows for content creation automation.</p>
+        </footer>
+    </div>
+</body>
+</html>

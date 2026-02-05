@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Video Editor - Technical Architecture</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Code', 'Consolas', monospace;
+            line-height: 1.7;
+            color: #1a1a1a;
+            background: #f9fafb;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        header {
+            margin-bottom: 50px;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 12px;
+            letter-spacing: -0.02em;
+        }
+
+        .subtitle {
+            font-size: 1.1em;
+            color: #64748b;
+            font-weight: 400;
+        }
+
+        h2 {
+            font-size: 1.8em;
+            font-weight: 600;
+            color: #0f172a;
+            margin-top: 60px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 12px;
+        }
+
+        h3 {
+            font-size: 1.3em;
+            font-weight: 600;
+            color: #334155;
+            margin-top: 35px;
+            margin-bottom: 15px;
+        }
+
+        p {
+            margin-bottom: 18px;
+            color: #334155;
+            font-size: 1em;
+        }
+
+        .diagram {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 30px;
+            margin: 30px 0;
+            font-family: monospace;
+            overflow-x: auto;
+        }
+
+        .step {
+            background: #f8fafc;
+            border-left: 4px solid #3b82f6;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+
+        .step-number {
+            display: inline-block;
+            background: #3b82f6;
+            color: white;
+            width: 28px;
+            height: 28px;
+            line-height: 28px;
+            text-align: center;
+            border-radius: 50%;
+            font-weight: 600;
+            margin-right: 12px;
+            font-size: 0.9em;
+        }
+
+        .step-title {
+            font-weight: 600;
+            color: #0f172a;
+            font-size: 1.1em;
+            margin-bottom: 10px;
+        }
+
+        .step-desc {
+            color: #475569;
+            margin-left: 40px;
+        }
+
+        pre {
+            background: #0f172a;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 6px;
+            overflow-x: auto;
+            margin: 20px 0;
+            font-size: 0.9em;
+            line-height: 1.6;
+        }
+
+        code {
+            font-family: 'SF Mono', Monaco, monospace;
+        }
+
+        .inline-code {
+            background: #e2e8f0;
+            color: #0f172a;
+            padding: 3px 6px;
+            border-radius: 3px;
+            font-size: 0.9em;
+            font-family: 'SF Mono', Monaco, monospace;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 25px 0;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        th {
+            background: #f8fafc;
+            padding: 14px;
+            text-align: left;
+            font-weight: 600;
+            color: #0f172a;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        td {
+            padding: 14px;
+            color: #334155;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover {
+            background: #f8fafc;
+        }
+
+        .tech-stack {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 25px 0;
+        }
+
+        .tech-item {
+            background: white;
+            border: 1px solid #e2e8f0;
+            padding: 18px;
+            border-radius: 6px;
+        }
+
+        .tech-name {
+            font-weight: 600;
+            color: #0f172a;
+            margin-bottom: 6px;
+        }
+
+        .tech-purpose {
+            font-size: 0.9em;
+            color: #64748b;
+        }
+
+        .info-box {
+            background: #eff6ff;
+            border-left: 4px solid #3b82f6;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 4px;
+        }
+
+        .warning-box {
+            background: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 4px;
+        }
+
+        .success-box {
+            background: #d1fae5;
+            border-left: 4px solid #10b981;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 4px;
+        }
+
+        ul, ol {
+            margin: 15px 0 15px 30px;
+        }
+
+        li {
+            margin-bottom: 10px;
+            color: #334155;
+        }
+
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .comparison-item {
+            background: white;
+            border: 1px solid #e2e8f0;
+            padding: 20px;
+            border-radius: 6px;
+        }
+
+        .comparison-item h4 {
+            color: #0f172a;
+            margin-bottom: 12px;
+            font-size: 1.1em;
+        }
+
+        footer {
+            margin-top: 80px;
+            padding-top: 30px;
+            border-top: 2px solid #e2e8f0;
+            text-align: center;
+            color: #64748b;
+            font-size: 0.9em;
+        }
+
+        .metric {
+            display: inline-block;
+            background: white;
+            border: 1px solid #e2e8f0;
+            padding: 12px 20px;
+            border-radius: 6px;
+            margin: 10px 10px 10px 0;
+        }
+
+        .metric-value {
+            font-size: 1.8em;
+            font-weight: 700;
+            color: #3b82f6;
+        }
+
+        .metric-label {
+            font-size: 0.85em;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .architecture-layer {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+
+        .layer-badge {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.85em;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>AI Video Editor</h1>
+            <p class="subtitle">Technical Architecture & Implementation</p>
+        </header>
+
+        <section>
+            <p>An automated video editing system that removes silences, enhances audio, applies color grading, and adds 3D transitions to talking-head videos. Built entirely with local processing—no cloud APIs, no recurring costs.</p>
+
+            <div class="success-box">
+                <strong>Cost:</strong> $0 - No ongoing costs. Uses FFmpeg, Silero VAD, and MediaPipe for all processing.
+            </div>
+
+            <div class="metrics" style="margin: 30px 0;">
+                <div class="metric">
+                    <div class="metric-value">4-6×</div>
+                    <div class="metric-label">Faster Encoding</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-value">-16 LUFS</div>
+                    <div class="metric-label">YouTube Standard</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-value">0.5s</div>
+                    <div class="metric-label">Min Silence Gap</div>
+                </div>
+            </div>
+        </section>
+
+        <h2>What It Does</h2>
+        <p>Takes raw talking-head footage and produces broadcast-quality output by:</p>
+        <ul>
+            <li><strong>Removing dead air</strong> - Cuts all silences longer than 0.5 seconds using neural voice activity detection</li>
+            <li><strong>Enhancing audio</strong> - Professional EQ, compression, and normalization to YouTube standards</li>
+            <li><strong>Color grading</strong> - Applies LUT files for cinematic color correction</li>
+            <li><strong>Adding teasers</strong> - Inserts 3D swivel transitions that preview later content</li>
+            <li><strong>Hardware acceleration</strong> - Uses VideoToolbox or NVENC for 4-6× faster encoding</li>
+            <li><strong>Extensible architecture</strong> - Additional features can be built on request, with support for automation templates (color correction presets, audio profiles, batch processing workflows)</li>
+        </ul>
+
+        <h2>The Pipeline</h2>
+
+        <div class="step">
+            <div class="step-title">
+                <span class="step-number">1</span>
+                Extract Audio
+            </div>
+            <div class="step-desc">
+                FFmpeg extracts the audio track from the source video into a WAV file. This raw audio feeds into the voice activity detection system.
+            </div>
+        </div>
+
+        <div class="step">
+            <div class="step-title">
+                <span class="step-number">2</span>
+                Voice Activity Detection (VAD)
+            </div>
+            <div class="step-desc">
+                Silero VAD (a neural network model) analyzes the audio waveform and identifies speech segments. It outputs timestamp ranges where actual speech occurs, ignoring background noise, breathing, and silence.
+            </div>
+        </div>
+
+        <div class="step">
+            <div class="step-title">
+                <span class="step-number">3</span>
+                Segment Generation
+            </div>
+            <div class="step-desc">
+                The system converts VAD timestamps into video segments. It adds 50ms padding around each speech segment for natural transitions and filters out segments shorter than 0.25 seconds.
+            </div>
+        </div>
+
+        <div class="step">
+            <div class="step-title">
+                <span class="step-number">4</span>
+                Parallel Encoding
+            </div>
+            <div class="step-desc">
+                Four segments encode simultaneously using ThreadPoolExecutor. Each worker runs FFmpeg with hardware acceleration (VideoToolbox on macOS, NVENC on Windows). This parallelization is why the system is 4-6× faster than sequential processing.
+            </div>
+        </div>
+
+        <div class="step">
+            <div class="step-title">
+                <span class="step-number">5</span>
+                Audio Enhancement
+            </div>
+            <div class="step-desc">
+                FFmpeg applies a filter chain: 80Hz highpass (removes rumble) → 12kHz lowpass (removes harshness) → 3kHz presence boost → 200Hz warmth cut → gentle compression → loudness normalization to -16 LUFS.
+            </div>
+        </div>
+
+        <div class="step">
+            <div class="step-title">
+                <span class="step-number">6</span>
+                Concatenation
+            </div>
+            <div class="step-desc">
+                All encoded segments are concatenated into a single output file using FFmpeg's concat demuxer. The enhanced audio is muxed with the edited video.
+            </div>
+        </div>
+
+        <div class="step">
+            <div class="step-title">
+                <span class="step-number">7</span>
+                3D Transition (Optional)
+            </div>
+            <div class="step-desc">
+                Remotion renders a 3D swivel animation showing a fast-forward preview of later content. This gets composited at the 3-second mark while original audio continues playing.
+            </div>
+        </div>
+
+        <h2>Technical Stack</h2>
+
+        <div class="tech-stack">
+            <div class="tech-item">
+                <div class="tech-name"><a href="https://ffmpeg.org/" target="_blank" style="color: #0f172a; text-decoration: none;">FFmpeg</a></div>
+                <div class="tech-purpose">Complete multimedia framework for video/audio encoding, decoding, filtering, and muxing. Handles all video processing operations.</div>
+            </div>
+            <div class="tech-item">
+                <div class="tech-name"><a href="https://github.com/snakers4/silero-vad" target="_blank" style="color: #0f172a; text-decoration: none;">Silero VAD</a></div>
+                <div class="tech-purpose">Pre-trained neural network for voice activity detection. Distinguishes speech from silence, breathing, and background noise with high accuracy.</div>
+            </div>
+            <div class="tech-item">
+                <div class="tech-name"><a href="https://developer.apple.com/documentation/videotoolbox" target="_blank" style="color: #0f172a; text-decoration: none;">VideoToolbox</a></div>
+                <div class="tech-purpose">Apple's hardware-accelerated video encoding framework. Provides 4-6× faster H.264 encoding on macOS using dedicated media engines.</div>
+            </div>
+            <div class="tech-item">
+                <div class="tech-name"><a href="https://developer.nvidia.com/nvidia-video-codec-sdk" target="_blank" style="color: #0f172a; text-decoration: none;">NVENC</a></div>
+                <div class="tech-purpose">NVIDIA's GPU-accelerated video encoder. Offloads encoding to dedicated hardware on NVIDIA GPUs for 3-5× faster processing.</div>
+            </div>
+            <div class="tech-item">
+                <div class="tech-name"><a href="https://www.python.org/" target="_blank" style="color: #0f172a; text-decoration: none;">Python</a></div>
+                <div class="tech-purpose">Main orchestration language. Manages pipeline coordination, parallel processing with ThreadPoolExecutor, and subprocess management.</div>
+            </div>
+            <div class="tech-item">
+                <div class="tech-name"><a href="https://www.remotion.dev/" target="_blank" style="color: #0f172a; text-decoration: none;">Remotion</a></div>
+                <div class="tech-purpose">React-based video composition framework. Renders programmatic 3D transitions and effects using TypeScript and Three.js.</div>
+            </div>
+        </div>
+
+        <h2>Feature: Voice Activity Detection</h2>
+
+        <p>This feature is the core of the silence removal process. Silero VAD is a neural network trained to distinguish speech from non-speech audio. It integrates into the pipeline at Step 2, analyzing the extracted audio to identify exactly when speech occurs. Unlike simple threshold-based silence detection, VAD understands:</p>
+
+        <ul>
+            <li><strong>Speech vs. breathing</strong> - Ignores inhales and exhales that aren't words</li>
+            <li><strong>Background noise</strong> - Doesn't mistake room tone or HVAC hum for speech</li>
+            <li><strong>Natural pauses</strong> - Preserves brief pauses mid-sentence for natural pacing</li>
+            <li><strong>Voice characteristics</strong> - Adapts to different vocal timbres and recording quality</li>
+        </ul>
+
+        <div class="comparison">
+            <div class="comparison-item">
+                <h4>Simple Threshold Detection</h4>
+                <p style="color: #64748b; font-size: 0.95em;">FFmpeg silencedetect looks for audio below -35dB for 3+ seconds. Fast but crude—can't distinguish breathing from speech, cuts natural pauses, struggles with varying recording levels.</p>
+            </div>
+            <div class="comparison-item">
+                <h4>Neural VAD (Silero)</h4>
+                <p style="color: #64748b; font-size: 0.95em;">Neural network analyzes frequency patterns and temporal dynamics. Understands speech vs. non-speech at a semantic level. More accurate, preserves natural pacing, adapts to recording quality.</p>
+            </div>
+        </div>
+
+        <h3>VAD Configuration (Example - All Values Adjustable)</h3>
+        <p>These parameters control how the VAD feature processes audio. All values are configurable variables that can be tuned for different recording styles:</p>
+        <table>
+            <thead>
+                <tr>
+                    <th>Parameter</th>
+                    <th>Example Value</th>
+                    <th>Purpose</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><code>MIN_SILENCE_DURATION</code></td>
+                    <td>0.5s</td>
+                    <td>Minimum gap between speech to cut (adjustable for pacing preference)</td>
+                </tr>
+                <tr>
+                    <td><code>PADDING_MS</code></td>
+                    <td>50ms</td>
+                    <td>Safety margin around speech segments (adjustable for natural transitions)</td>
+                </tr>
+                <tr>
+                    <td><code>MIN_SPEECH_DURATION</code></td>
+                    <td>0.25s</td>
+                    <td>Minimum speech segment to keep (adjustable to filter out artifacts)</td>
+                </tr>
+                <tr>
+                    <td><code>RESTART_PHRASE</code></td>
+                    <td>"cut cut"</td>
+                    <td>Triggers removal of previous section (customizable to any phrase)</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2>Feature: Audio Enhancement</h2>
+
+        <p>This feature integrates at Step 5 of the pipeline, applying professional broadcast-quality audio processing to the edited segments before final output. The filter chain processes audio through multiple stages:</p>
+
+        <h3>Filter Breakdown</h3>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Filter</th>
+                    <th>Parameters</th>
+                    <th>Effect</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Highpass</strong></td>
+                    <td>80 Hz cutoff</td>
+                    <td>Removes low-frequency rumble (HVAC, desk bumps, mic handling)</td>
+                </tr>
+                <tr>
+                    <td><strong>Lowpass</strong></td>
+                    <td>12 kHz cutoff</td>
+                    <td>Removes harsh high frequencies and electrical noise</td>
+                </tr>
+                <tr>
+                    <td><strong>Presence EQ</strong></td>
+                    <td>+2dB @ 3kHz</td>
+                    <td>Boosts vocal clarity and intelligibility</td>
+                </tr>
+                <tr>
+                    <td><strong>Warmth EQ</strong></td>
+                    <td>-1dB @ 200Hz</td>
+                    <td>Reduces muddiness in lower midrange</td>
+                </tr>
+                <tr>
+                    <td><strong>Compression</strong></td>
+                    <td>3:1 ratio @ -20dB</td>
+                    <td>Evens out volume dynamics, adds punch</td>
+                </tr>
+                <tr>
+                    <td><strong>Loudnorm</strong></td>
+                    <td>-16 LUFS integrated</td>
+                    <td>Normalizes to YouTube's loudness standard</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="info-box">
+            <strong>Why -16 LUFS?</strong> YouTube normalizes all content to -14 LUFS. By targeting -16 LUFS, we leave 2 LU of headroom to prevent clipping while staying close to the platform standard. This ensures consistent loudness across videos.
+        </div>
+
+        <h2>Feature: Hardware Acceleration</h2>
+
+        <p>This feature integrates at Step 4 (Parallel Encoding) of the pipeline. The system automatically detects available hardware encoders at runtime and selects the best option, offloading video encoding to dedicated hardware for significantly faster processing:</p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Platform</th>
+                    <th>Encoder</th>
+                    <th>Speed vs Software</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>macOS (M1/M2)</td>
+                    <td>h264_videotoolbox</td>
+                    <td>4-6× faster</td>
+                </tr>
+                <tr>
+                    <td>Windows/Linux (NVIDIA)</td>
+                    <td>h264_nvenc</td>
+                    <td>3-5× faster</td>
+                </tr>
+                <tr>
+                    <td>Fallback</td>
+                    <td>libx264 (software)</td>
+                    <td>1× (baseline)</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Parallel Processing Architecture</h3>
+
+        <pre><code># Four workers encode simultaneously
+ThreadPoolExecutor(max_workers=4)
+
+Worker 1: Segment 1  ████████████ (12s)
+Worker 2: Segment 2  ████████████ (12s)
+Worker 3: Segment 3  ████████████ (12s)
+Worker 4: Segment 4  ████████████ (12s)
+                     ↓
+            Total time: ~12s
+
+# vs Sequential (old approach)
+Segment 1 ████████████ (12s)
+Segment 2 ████████████ (12s)
+Segment 3 ████████████ (12s)
+Segment 4 ████████████ (12s)
+          ↓
+Total time: ~48s</code></pre>
+
+        <div class="info-box">
+            <strong>Performance Impact:</strong> The parallel approach reduces a 10-minute video encoding from <strong>~40 seconds to ~8 seconds on Apple Silicon</strong> — a 5× speedup through parallelization alone.
+        </div>
+
+        <h2>Feature: Smart Rendering</h2>
+
+        <p>This optimization feature integrates into Step 4 (Parallel Encoding). For segments longer than 5 seconds, the system uses "smart rendering" to avoid re-encoding the entire segment, instead copying most of the data directly:</p>
+
+        <pre><code>Original segment: [0s -------- 10s]
+
+Smart render approach:
+1. Copy first 1s:  [0s - 1s] (encode)
+2. Copy middle:    [1s - 9s] (stream copy, instant)
+3. Copy last 1s:   [9s - 10s] (encode)
+
+Result: Only 2 seconds re-encoded, 8 seconds copied
+Speedup: ~5× on long segments</code></pre>
+
+        <p>This optimization is critical for long recordings where most segments don't need full re-encoding.</p>
+
+        <h2>Feature: 3D Swivel Transition</h2>
+
+        <p>This optional feature integrates at Step 7 of the pipeline. The teaser uses Remotion (React + Three.js) to render a 3D animation:</p>
+
+        <ol>
+            <li>Extracts video frames from later content in the video</li>
+            <li>Creates a "video plane" texture in 3D space</li>
+            <li>Applies rotation transforms (yaw, pitch, roll)</li>
+            <li>Plays content at 60× speed while rotating</li>
+            <li>Composites over background image or solid color</li>
+            <li>Inserts at 3-second mark in timeline</li>
+        </ol>
+
+        <div class="diagram">
+            <pre>Timeline Structure:
+
+Video track:  [0-3s intro] [3-8s TEASER (3D swivel)] [8s+ original content]
+Audio track:  [original audio plays continuously throughout]
+
+Teaser shows:  Content from 1:00 to end at 60× speed with rotation
+Result:        5-second preview of later content without spoiling audio</pre>
+        </div>
+
+        <h2>Feature: Restart Detection (Live Recording)</h2>
+
+        <p>This feature enables intelligent mistake removal during live recording. The <code class="inline-code">--detect-restarts</code> flag activates this functionality:</p>
+
+        <p><strong>How it works:</strong> When you make a mistake while recording, simply say "cut cut" (or your custom restart phrase). The editor will automatically detect this phrase during processing and remove the mistake section from the final edit.</p>
+
+        <p><strong>Example workflow:</strong></p>
+        <pre><code>Recording: "This is a video about... [pause] ...um, wait... cut cut... This is a video about AI."
+
+When processed:
+- VAD detects all speech segments
+- Transcription finds "cut cut" at timestamp 8.5s
+- System looks back 10s to find last silence (at 5.2s)
+- Removes everything from 5.2s to 8.5s
+- Final output: "This is a video about AI."
+
+Algorithm:
+1. Transcribe audio using Whisper
+2. Find "cut cut" timestamp
+3. Look back 10 seconds for last silence
+4. Remove everything between that silence and "cut cut"
+5. Resume from "cut cut" onwards</code></pre>
+
+        <p>This allows you to say "cut cut" during recording to remove mistakes without manual editing.</p>
+
+        <h2>Feature: Color Grading</h2>
+
+        <p>This feature applies professional color correction using LUT files. The <code class="inline-code">--apply-lut</code> flag activates this functionality:</p>
+
+        <ul>
+            <li>Supports .cube, .3dl, .dat, .m3d, .csp formats</li>
+            <li>FFmpeg's <code>lut3d</code> filter applies the transformation</li>
+            <li>Operates in linear RGB color space</li>
+            <li>Preserves color accuracy while applying creative grades</li>
+        </ul>
+
+        <p>Common use cases: cinematic looks, color correction, brand consistency.</p>
+
+        <h2>Usage Examples</h2>
+
+        <h3>Basic Workflow</h3>
+        <pre><code># Step 1: Record video in OBS or similar
+# Step 2: Run the editor
+
+python execution/jump_cut_vad_parallel.py \
+    recording.mp4 \
+    edited.mp4 \
+    --enhance-audio
+
+# Result: edited.mp4 with silences removed and audio enhanced</code></pre>
+
+        <h3>Full Production Workflow</h3>
+        <pre><code># 1. Edit with all enhancements
+python execution/jump_cut_vad_parallel.py \
+    raw.mp4 \
+    .tmp/edited.mp4 \
+    --enhance-audio \
+    --apply-lut .tmp/cinematic.cube \
+    --detect-restarts
+
+# 2. Add 3D teaser
+python execution/insert_3d_transition.py \
+    .tmp/edited.mp4 \
+    final.mp4 \
+    --insert-at 3 \
+    --duration 5 \
+    --teaser-start 60 \
+    --bg-image .tmp/background.png
+
+# Result: Broadcast-quality video ready for upload</code></pre>
+
+        <h2>Performance Characteristics</h2>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Video Duration</th>
+                    <th>Processing Time (M1 Max)</th>
+                    <th>Speedup vs Real-time</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>5 minutes</td>
+                    <td>~12 seconds</td>
+                    <td>25× faster than real-time</td>
+                </tr>
+                <tr>
+                    <td>10 minutes</td>
+                    <td>~22 seconds</td>
+                    <td>27× faster than real-time</td>
+                </tr>
+                <tr>
+                    <td>30 minutes</td>
+                    <td>~58 seconds</td>
+                    <td>31× faster than real-time</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="info-box">
+            <strong>Note:</strong> Times include VAD analysis, parallel encoding, audio enhancement, and concatenation. Does not include optional 3D transition rendering.
+        </div>
+
+        <h2>Architecture Decisions (Technical Deep-Dive)</h2>
+
+        <p><em>This section is intended for developers and technical readers interested in implementation details. General users can skip to the next section.</em></p>
+
+        <h3>Why Parallel Encoding?</h3>
+        <p>VideoToolbox and NVENC are designed for real-time encoding and underutilize CPU/GPU when encoding a single stream. By running 4 encoders simultaneously, we saturate the hardware and achieve near-linear speedup (4 workers = 3.8× faster in practice due to overhead).</p>
+
+        <h3>Why 50ms Padding?</h3>
+        <p>VAD detects the exact moment speech starts/stops, but cutting at those precise timestamps creates jarring transitions. The 50ms padding adds a natural fade in/out and prevents clipping consonants at word boundaries.</p>
+
+        <h3>Why Neural VAD vs FFmpeg silencedetect?</h3>
+        <p>FFmpeg's silencedetect is threshold-based: if audio drops below -35dB for 3 seconds, it's silence. This fails with:</p>
+        <ul>
+            <li>Variable recording levels (quiet speakers get over-cut)</li>
+            <li>Background noise (HVAC, keyboard clicks)</li>
+            <li>Natural pauses (cuts mid-sentence breaks)</li>
+            <li>Breathing sounds (removes inhales that sound natural)</li>
+        </ul>
+        <p>Silero VAD understands speech patterns and solves all these issues.</p>
+
+        <h3>Why Hardware Encoding?</h3>
+        <p>Software encoding (libx264) produces slightly better quality at equivalent bitrates, but hardware encoding is "good enough" for YouTube and 4-6× faster. For content creation workflows where iteration speed matters, hardware encoding is the clear winner.</p>
+
+        <h2>Current Version Limitations (v1.0)</h2>
+
+        <ul>
+            <li><strong>Talk-heavy content only</strong> - Designed for solo talking-head videos, not interviews or multi-speaker content</li>
+            <li><strong>No manual override</strong> - VAD cuts are automatic; no fine-tuning individual segments</li>
+            <li><strong>English-centric</strong> - Silero VAD works best with English; other languages may have lower accuracy</li>
+            <li><strong>Hardware-dependent speed</strong> - Without VideoToolbox/NVENC, falls back to slower software encoding</li>
+        </ul>
+
+        <h2>Future Enhancements</h2>
+
+        <ul>
+            <li><strong>Multi-speaker support</strong> - Diarization to preserve dialogue pacing in interviews</li>
+            <li><strong>GPU-accelerated VAD</strong> - Move Silero inference to GPU for faster analysis</li>
+            <li><strong>Adaptive padding</strong> - Dynamic padding based on detected pause type (breath vs thought)</li>
+            <li><strong>Real-time preview</strong> - Live VAD visualization during recording</li>
+            <li><strong>Auto-captions</strong> - Generate SRT files from Whisper transcription</li>
+        </ul>
+
+        <h2>Extensibility for Repetitive Tasks</h2>
+
+        <p>The modular architecture makes it straightforward to add automations for repetitive production tasks:</p>
+
+        <h3>Potential Automation Opportunities</h3>
+
+        <ul>
+            <li><strong>Batch processing</strong> - Process entire directories of recordings with consistent settings</li>
+            <li><strong>Watch folder</strong> - Auto-process new videos dropped into a monitored directory</li>
+            <li><strong>Template-based workflows</strong> - Save presets for different video types (tutorials, vlogs, podcasts)</li>
+            <li><strong>Metadata extraction</strong> - Auto-generate titles, tags, and descriptions from transcript analysis</li>
+            <li><strong>Quality control</strong> - Automated checks for audio levels, video resolution, frame rate consistency</li>
+            <li><strong>Version management</strong> - Generate multiple cuts (full, short, teaser) from single source</li>
+            <li><strong>Upload automation</strong> - Direct integration with YouTube/Vimeo APIs for publishing</li>
+            <li><strong>Thumbnail generation</strong> - Auto-extract key frames and apply branding overlays</li>
+            <li><strong>Asset organization</strong> - Rename, tag, and file videos based on content analysis</li>
+            <li><strong>Analytics feedback</strong> - Adjust editing parameters based on performance metrics</li>
+        </ul>
+
+        <h3>Adding Custom Processing Steps</h3>
+
+        <p>The pipeline is designed to be extended. New processing steps can be inserted at any stage:</p>
+
+        <pre><code># Example: Add custom intro/outro
+def add_branding(input_path, output_path):
+    intro = "assets/intro.mp4"
+    outro = "assets/outro.mp4"
+
+    # Concatenate intro + edited video + outro
+    concat_list = f"{intro}\n{input_path}\n{outro}"
+    subprocess.run([
+        "ffmpeg", "-f", "concat", "-safe", "0",
+        "-i", concat_list, "-c", "copy", output_path
+    ])
+
+# Insert into workflow:
+# 1. VAD silence removal
+# 2. Audio enhancement
+# 3. Concatenation
+# 4. → add_branding() ← (new step)
+# 5. 3D transition</code></pre>
+
+        <h3>Scriptable Configuration</h3>
+
+        <p>All parameters can be stored in configuration files for repeatable workflows:</p>
+
+        <pre><code># config/tutorial_preset.json
+{
+    "min_silence_duration": 0.5,
+    "enhance_audio": true,
+    "apply_lut": "luts/cinematic.cube",
+    "detect_restarts": true,
+    "add_teaser": true,
+    "teaser_insert_at": 3,
+    "output_suffix": "_tutorial"
+}
+
+# Usage:
+python execution/jump_cut_vad_parallel.py \
+    input.mp4 \
+    output.mp4 \
+    --config config/tutorial_preset.json</code></pre>
+
+        <p>This architecture makes it easy to build custom tools on top of the core editing pipeline, automating whatever repetitive tasks exist in your specific production workflow.</p>
+
+        <footer>
+            <p>Built with FFmpeg · Silero VAD · Python · Remotion</p>
+            <p style="margin-top: 8px;">Local processing · No APIs · No recurring costs</p>
+        </footer>
+    </div>
+</body>
+</html>
